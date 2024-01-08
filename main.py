@@ -1,16 +1,36 @@
-# This is a sample Python script.
+# imports
+import torch
+from transformers import AutoTokenizer
+from trl import PPOTrainer, PPOConfig, AutoModelForCausalLMWithValueHead, create_reference_model
+from trl.core import respond_to_batch
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # get models
+    model = AutoModelForCausalLMWithValueHead.from_pretrained('gpt2')
+    model_ref = create_reference_model(model)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    tokenizer = AutoTokenizer.from_pretrained('gpt2')
+    tokenizer.pad_token = tokenizer.eos_token
+
+    # initialize trainer
+    ppo_config = PPOConfig(
+        batch_size=1,
+    )
+
+    # encode a query
+    query_txt = "This morning I went to the "
+    query_tensor = tokenizer.encode(query_txt, return_tensors="pt")
+
+    # get model response
+    response_tensor = respond_to_batch(model, query_tensor)
+
+    # create a ppo trainer
+    ppo_trainer = PPOTrainer(ppo_config, model, model_ref, tokenizer)
+
+    # define a reward for response
+    # (this could be any reward such as human feedback or output from another model)
+    reward = [torch.tensor(1.0)]
+
+    # train model for one step with ppo
+    train_stats = ppo_trainer.step([query_tensor[0]], [response_tensor[0]], reward)
+
