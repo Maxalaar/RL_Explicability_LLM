@@ -1,36 +1,14 @@
-# imports
-import torch
-from transformers import AutoTokenizer
-from trl import PPOTrainer, PPOConfig, AutoModelForCausalLMWithValueHead, create_reference_model
-from trl.core import respond_to_batch
+from model_follows_instructions import ModelFollowsInstructions
+from model_generates_instructions import ModelGeneratesInstructions
+from text_cart_pole import TextCartPole
+from trainer import Trainer
 
 if __name__ == '__main__':
-    # get models
-    model = AutoModelForCausalLMWithValueHead.from_pretrained('gpt2')
-    model_ref = create_reference_model(model)
+    environment: TextCartPole = TextCartPole()
 
-    tokenizer = AutoTokenizer.from_pretrained('gpt2')
-    tokenizer.pad_token = tokenizer.eos_token
+    model_generates_instructions = ModelGeneratesInstructions('gpt2')
+    model_follows_instructions = ModelFollowsInstructions('TheBloke/Mistral-7B-v0.1-AWQ', environment.get_actions_tokens())     # 'gpt2', 'TheBloke/Mistral-7B-v0.1-AWQ'
 
-    # initialize trainer
-    ppo_config = PPOConfig(
-        batch_size=1,
-    )
-
-    # encode a query
-    query_txt = "This morning I went to the "
-    query_tensor = tokenizer.encode(query_txt, return_tensors="pt")
-
-    # get model response
-    response_tensor = respond_to_batch(model, query_tensor)
-
-    # create a ppo trainer
-    ppo_trainer = PPOTrainer(ppo_config, model, model_ref, tokenizer)
-
-    # define a reward for response
-    # (this could be any reward such as human feedback or output from another model)
-    reward = [torch.tensor(1.0)]
-
-    # train model for one step with ppo
-    train_stats = ppo_trainer.step([query_tensor[0]], [response_tensor[0]], reward)
+    trainer: Trainer = Trainer(model_generates_instructions, model_follows_instructions, environment, batch_size=3)
+    trainer.learn(1_000_000_000)
 
