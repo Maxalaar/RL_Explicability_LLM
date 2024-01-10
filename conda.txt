@@ -1,4 +1,13 @@
+conda env remove --name RL_Explicability_LLM
+conda create -n RL_Explicability_LLM python=3.10
+
 pip install trl
 pip install gymnasium
-pip install tensorflow
 pip install click
+pip install bitsandbytes
+pip install tensorboardX
+pip install tensorboard
+
+bad:
+pip install tensorflow
+pip install ctransformers[cuda] or pip install autoawq

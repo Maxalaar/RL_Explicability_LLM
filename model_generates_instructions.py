@@ -4,9 +4,9 @@ from trl.core import respond_to_batch
 
 
 class ModelGeneratesInstructions:
-    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: '):
+    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', device: str = 'cuda:0'):
         self.model_id: str = model_id
-        self.device = 'cuda'
+        self.device: str = device
         self.instruction_size_max: int = instruction_size_max
 
         self.model = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device)
@@ -31,7 +31,7 @@ class ModelGeneratesInstructions:
         if self.instruction_size_max is not None:
             optional_arguments['txt_len'] = self.instruction_size_max
 
-        response_tensor = respond_to_batch(self.model, query_tensor, **optional_arguments)
+        response_tensor = respond_to_batch(self.model.to(self.device), query_tensor.to(self.device), **optional_arguments)
         return self.decode(response_tensor[0])
 
     def get_memory_footprint(self):
