@@ -7,6 +7,7 @@ from gymnasium import Env
 class TextCartPole(Env):
     def __init__(self):
         self.environment = gym.make('CartPole-v1')
+        self.seed = 0
         self.max_reward = 500
         # Provide a set of instructions to solve the following task:
         self.description_environment = 'You control a Cart with a Pole on top; you must prevent it from falling. You can move from right to left to prevent the Pole from falling. Actions are, 0: Push cart to the left, 1: Push cart to the right. '
@@ -21,14 +22,16 @@ class TextCartPole(Env):
         }
 
     def reset(self, **kwargs):
-        observation, information = self.environment.reset()
+        if self.seed is None:
+            observation, information = self.environment.reset()
+        else:
+            observation, information = self.environment.reset(seed=self.seed)
         return self.observation_to_text_observation(observation), information
 
     def step(self, action: str):
         if action is not None:
             action: int = self.actions_dictionary[action]
         else:
-            # action = random.randint(0, 1)
             action = 0
 
         observation, reward, terminated, truncated, information = self.environment.step(action)

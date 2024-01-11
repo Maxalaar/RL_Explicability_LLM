@@ -21,11 +21,8 @@ class Trainer:
         self.environment: gymnasium.Env = environment
 
         self.batch_size: int = batch_size
-        # os.environ["CUDA_VISIBLE_DEVICES"] = '0'
         self.configuration = PPOConfig(batch_size=self.batch_size)
-        # self.accelerator = Accelerator() , accelerator=self.accelerator
         self.trainer = PPOTrainer(self.configuration, self.model_generates_instructions.model, self.model_generates_instructions.model_reference, self.model_generates_instructions.tokenizer)
-        # self.trainer.accelerator = Accelerator()
 
         self.login_directory = './login/' + datetime.now().strftime('%Y%m%d-%H%M%S')
         self.writer = SummaryWriter(logdir=self.login_directory)
@@ -63,9 +60,9 @@ class Trainer:
                 end_time = time.time()
                 steps_time.append(end_time - start_time)
 
-                queries.append(queri[0].to(self.model_generates_instructions.device))   # self.model_generates_instructions.device
-                responses.append(response[0].to(self.model_generates_instructions.device))
-                rewards.append(reward.to(self.model_generates_instructions.device))
+                queries.append(queri[0])
+                responses.append(response[0])
+                rewards.append(reward)
 
             self.trainer.step(queries, responses, rewards)
             self.print_step_information(i, responses, rewards, steps_time)
