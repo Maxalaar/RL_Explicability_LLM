@@ -45,7 +45,7 @@ class Trainer:
 
         self.environment.close()
 
-        return total_reward/self.environment.max_reward
+        return total_reward
 
     def learn(self, number_steps: int):
         for i in range(number_steps):

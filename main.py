@@ -14,8 +14,9 @@ if __name__ == '__main__':
     )
 
     model_generates_instructions = ModelGeneratesInstructions(
-        model_id='gpt2-medium',
+        model_id='gpt2-large',
         instruction_size_max=50,
+        load_model_reference_in_4bit=True,
     )
 
     trainer: Trainer = Trainer(model_generates_instructions, model_follows_instructions, environment, batch_size=10)

@@ -35,7 +35,7 @@ class ModelFollowsInstructions:
         prompt = '\nFollow these instructions : ' + instructions + '\n' + observation + '\nThe action based on the previous instructions is :'
         input_ids = self.encode(prompt)
         attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
-        response_text = self.decode(self.model.generate(input_ids, max_new_tokens=self.size_response_action, attention_mask=attention_mask, pad_token_id=50256)[0])     # , eos_token_id=self.eos_token_id
+        response_text = self.decode(self.model.generate(input_ids.to('cuda'), max_new_tokens=self.size_response_action, attention_mask=attention_mask, pad_token_id=50256)[0])     # , eos_token_id=self.eos_token_id
         response_text = response_text.replace(prompt, '')
 
 

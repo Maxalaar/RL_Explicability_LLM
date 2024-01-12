@@ -4,13 +4,21 @@ from trl.core import respond_to_batch
 
 
 class ModelGeneratesInstructions:
-    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: '):
+    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False):
         self.model_id: str = model_id
         self.device: str = 'auto'
         self.instruction_size_max: int = instruction_size_max
 
         self.model = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device)
-        self.model_reference = create_reference_model(self.model)
+
+        # bnb_config = BitsAndBytesConfig(
+        #     load_in_4bit=True,
+        #     bnb_4bit_use_double_quant=True,
+        #     bnb_4bit_quant_type='nf4',
+        #     bnb_4bit_compute_dtype=torch.bfloat16
+        # )
+
+        self.model_reference = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device, load_in_4bit=load_model_reference_in_4bit, load_in_8bit=load_model_reference_in_8bit)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.tokenizer.pad_token = self.tokenizer.eos_token
@@ -34,7 +42,8 @@ class ModelGeneratesInstructions:
         return self.decode(response_tensor[0])
 
     def get_memory_footprint(self):
-        return self.model.get_memory_footprint()
+        # return self.model.get_memory_footprint()
+        pass
 
 
 
