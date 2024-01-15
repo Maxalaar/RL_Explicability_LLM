@@ -4,13 +4,14 @@ from trl.core import respond_to_batch
 
 
 class ModelGeneratesInstructions:
-    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False):
+    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False, number_layers_freeze: int = 0):
         self.model_id: str = model_id
         self.device: str = 'auto'
         self.instruction_size_max: int = instruction_size_max
 
         self.model = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device)
 
+        self.freeze(number_layers_freeze)
         # bnb_config = BitsAndBytesConfig(
         #     load_in_4bit=True,
         #     bnb_4bit_use_double_quant=True,
@@ -44,6 +45,13 @@ class ModelGeneratesInstructions:
     def get_memory_footprint(self):
         # return self.model.get_memory_footprint()
         pass
+
+    def freeze(self, number_layers_freeze):
+        current_index_layer: int = 0
+        for name, parameter in self.model.named_parameters():
+            if current_index_layer < 8 * number_layers_freeze + 2:
+                parameter.requires_grad = False
+            current_index_layer += 1
 
 
 

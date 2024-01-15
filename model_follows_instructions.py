@@ -16,13 +16,14 @@ class ModelFollowsInstructions:
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type='nf4',
-            bnb_4bit_compute_dtype=torch.bfloat16
+            bnb_4bit_compute_dtype=torch.float16
         )
 
         self.model = AutoModelForCausalLM.from_pretrained(model_id, device_map=self.device, quantization_config=bnb_config, load_in_4bit=load_in_4bit, load_in_8bit=load_in_8bit)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
 
         self.list_actions_tokens: List[str] = list_actions_tokens
+        self.list_actions_tokens_ids = torch.cat([self.tokenizer.encode(token, return_tensors='pt') for token in self.list_actions_tokens], dim=0).view(-1)
         self.actions_regex_pattern = '|'.join(map(regex.escape, self.list_actions_tokens))
 
     def encode(self, query_text: str):
@@ -32,15 +33,23 @@ class ModelFollowsInstructions:
         return self.tokenizer.decode(query_tensor, skip_special_tokens=True)
 
     def follow_instructions(self, instructions: str, observation: str) -> Union[str, None]:
-        prompt = '\nFollow these instructions : ' + instructions + '\n' + observation + '\nThe action based on the previous instructions is :'
+        prompt = 'Follow these instructions : ' + instructions + '\n' + observation + '\nThe action based on the previous instructions is :'
         input_ids = self.encode(prompt)
         attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
+        
+        if True:
+            return self.action_text(input_ids, attention_mask, prompt)
+        else:
+            return self.action_logit(input_ids, attention_mask)
+
+    def get_memory_footprint(self):
+        return self.model.get_memory_footprint()
+    
+    def action_text(self, input_ids, attention_mask, prompt):
         response_text = self.decode(self.model.generate(input_ids.to('cuda'), max_new_tokens=self.size_response_action, attention_mask=attention_mask, pad_token_id=50256)[0])     # , eos_token_id=self.eos_token_id
         response_text = response_text.replace(prompt, '')
-
-
         return self.find_action_token(response_text)
-
+    
     def find_action_token(self, text: str) -> Union[str, None]:
         match = regex.search(self.actions_regex_pattern, text)
 
@@ -48,6 +57,13 @@ class ModelFollowsInstructions:
             return match.group()
         else:
             return None
+    
+    def action_logit(self, input_ids, attention_mask):
+        logits = self.model.generate(input_ids.to('cuda'), max_new_tokens=1, attention_mask=attention_mask, pad_token_id=50256)[0].logit()
+        logits = logits[0, -1, :]
+        softmax_probs = torch.softmax(logits, dim=-1)
+        return None
 
-    def get_memory_footprint(self):
-        return self.model.get_memory_footprint()
+
+
+

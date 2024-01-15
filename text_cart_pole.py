@@ -29,16 +29,12 @@ class TextCartPole(Env):
         return self.observation_to_text_observation(observation), information
 
     def step(self, action: str):
-        reward_bonus = 0
         if action is not None:
             action: int = self.actions_dictionary[action]
-            reward_bonus += 1
+            observation, reward, terminated, truncated, information = self.environment.step(action)
+            return self.observation_to_text_observation(observation), 1, terminated, truncated, information
         else:
-            action = 0
-
-        observation, reward, terminated, truncated, information = self.environment.step(action)
-
-        return self.observation_to_text_observation(observation), reward_bonus, terminated, truncated, information
+            return None, 0, True, False, {}
 
     def close(self):
         self.environment.close()

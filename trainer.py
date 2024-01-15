@@ -1,4 +1,5 @@
 import time
+import random
 from datetime import datetime
 import torch
 import numpy as np
@@ -90,12 +91,16 @@ class Trainer:
         score_mean = np.mean(rewards_on_cpu)
         step_time_mean = np.mean(np.array(steps_time))
 
-        print('Step ' + str(current_step_number) + ' information :')
+        print('--- Step ' + str(current_step_number) + ' information ---')
         print('score mean: ' + str(score_mean))
         # print('rewards: ' + str(rewards_on_cpu))
         # print('index max: ' + str(np.argmax(rewards_on_cpu)))
         print('step time mean: ' + str(step_time_mean) + 's')
+        print('best instruction score: ' + str(rewards_on_cpu[np.argmax(rewards_on_cpu)]))
         print('best instruction: ' + self.model_generates_instructions.decode(responses[np.argmax(rewards_on_cpu)]))
+        random_index = random.randint(0, len(responses)-1)
+        print('random instruction score: ' + str(rewards_on_cpu[random_index]))
+        print('random instruction: ' + self.model_generates_instructions.decode(responses[random_index]))
         print('')
         self.writer.add_scalar(tag='reward_mean', scalar_value=score_mean, global_step=current_step_number)
 
