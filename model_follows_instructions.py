@@ -1,14 +1,13 @@
 from typing import List, Union
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig, AutoTokenizer
-from trl.core import respond_to_batch
 import regex
-import sys
 import torch
 
 
 class ModelFollowsInstructions:
-    def __init__(self, model_id: str, list_actions_tokens: List[str], size_response_action: int = None, load_in_8bit=False, load_in_4bit=False):
+    def __init__(self, model_id: str, list_actions_tokens: List[str], size_response_action: int = None, load_in_8bit=False, load_in_4bit=False, use_logit_to_predict=False):
         self.model_id = model_id
+        self.use_logit_to_predict = use_logit_to_predict
         self.device: str = 'auto'
         self.size_response_action = size_response_action
 
@@ -37,10 +36,10 @@ class ModelFollowsInstructions:
         input_ids = self.encode(prompt)
         attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
         
-        if True:
-            return self.action_text(input_ids, attention_mask, prompt)
+        if self.use_logit_to_predict:
+            return self.action_logit(input_ids)
         else:
-            return self.action_logit(input_ids, attention_mask)
+            return self.action_text(input_ids, attention_mask, prompt)
 
     def get_memory_footprint(self):
         return self.model.get_memory_footprint()
@@ -58,12 +57,10 @@ class ModelFollowsInstructions:
         else:
             return None
     
-    def action_logit(self, input_ids, attention_mask):
-        logits = self.model.generate(input_ids.to('cuda'), max_new_tokens=1, attention_mask=attention_mask, pad_token_id=50256)[0].logit()
-        logits = logits[0, -1, :]
-        softmax_probs = torch.softmax(logits, dim=-1)
-        return None
-
-
-
+    def action_logit(self, input_ids):
+        logits = self.model.forward(input_ids).logits
+        logit = logits[0, -1, :]
+        action_logit = logit[self.list_actions_tokens_ids]
+        index = torch.argmax(action_logit).item()
+        return self.list_actions_tokens[index]
 

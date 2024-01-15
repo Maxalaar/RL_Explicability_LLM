@@ -40,7 +40,7 @@ class TextCartPole(Env):
         self.environment.close()
 
     def get_actions_tokens(self):
-        return self.actions_dictionary.keys()
+        return list(self.actions_dictionary.keys())
 
     def observation_to_text_observation(self, observation) -> str:
         return self.description_observation + ' The current observation is : ' + str(observation)
