@@ -1,15 +1,27 @@
 from trl import AutoModelForCausalLMWithValueHead, create_reference_model
 from transformers import AutoTokenizer
 from trl.core import respond_to_batch
+from peft import LoraConfig
 
 
 class ModelGeneratesInstructions:
-    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False, number_layers_freeze: int = 0):
+    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False, number_layers_freeze: int = 0, use_lora: bool = False):
         self.model_id: str = model_id
         self.device: str = 'auto'
         self.instruction_size_max: int = instruction_size_max
 
-        self.model = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device)
+        if use_lora:
+            self.lora_config = LoraConfig(
+                r=16,
+                lora_alpha=32,
+                lora_dropout=0.05,
+                bias="none",
+                task_type="CAUSAL_LM",
+            )
+        else:
+            self.lora_config = None
+
+        self.model = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device, peft_config=self.lora_config)
 
         self.freeze(number_layers_freeze)
         # bnb_config = BitsAndBytesConfig(

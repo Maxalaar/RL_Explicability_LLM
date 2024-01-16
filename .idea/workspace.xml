@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="461181cc-88b8-4416-9cc6-52ff03c2591f" name="Changes" comment="init trl lib">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conda.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model_follows_instructions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model_generates_instructions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/text_cart_pole.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="461181cc-88b8-4416-9cc6-52ff03c2591f" name="Changes" comment="Debug logit action" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,14 +29,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.main.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="RL_Explicability_LLM" />
@@ -110,13 +101,22 @@
       <option name="project" value="LOCAL" />
       <updated>1704702527846</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Debug logit action">
+      <option name="closed" value="true" />
+      <created>1705398387249</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1705398387249</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="init trl lib" />
-    <option name="LAST_COMMIT_MESSAGE" value="init trl lib" />
+    <MESSAGE value="Debug logit action" />
+    <option name="LAST_COMMIT_MESSAGE" value="Debug logit action" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
