@@ -22,7 +22,7 @@ class ModelFollowsInstructions:
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
 
         self.list_actions_tokens: List[str] = list_actions_tokens
-        self.list_actions_tokens_ids = torch.cat([self.tokenizer.encode(token, return_tensors='pt') for token in self.list_actions_tokens], dim=0).view(-1)
+        self.list_actions_tokens_ids = [self.tokenizer.encode(token, return_tensors='pt') for token in self.list_actions_tokens]
         self.actions_regex_pattern = '|'.join(map(regex.escape, self.list_actions_tokens))
 
     def encode(self, query_text: str):
@@ -61,7 +61,7 @@ class ModelFollowsInstructions:
         score = []
         outputs = self.model.generate(input_ids.to('cuda'), pad_token_id=50256, attention_mask=attention_mask, max_new_tokens=1, return_dict_in_generate=True, output_scores=True)
         for action_token_ids in self.list_actions_tokens_ids:
-            wanted_seq = torch.cat((input_ids, action_token_ids.view(1, 1)), dim=1).to('cuda')
+            wanted_seq = torch.cat((input_ids, action_token_ids), dim=1).to('cuda')
             score.append(self.model.compute_transition_scores(wanted_seq, outputs.scores, normalize_logits=False))
 
         return self.list_actions_tokens[torch.argmax(torch.tensor(score)).item()]
