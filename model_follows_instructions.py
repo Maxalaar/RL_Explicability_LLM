@@ -58,9 +58,12 @@ class ModelFollowsInstructions:
             return None
     
     def action_logit(self, input_ids):
-        logits = self.model.forward(input_ids).logits
-        logit = logits[0, -1, :]
-        action_logit = logit[self.list_actions_tokens_ids]
-        index = torch.argmax(action_logit).item()
-        return self.list_actions_tokens[index]
+        score = []
+        outputs = self.model.generate(input_ids, return_dict_in_generate=True, output_scores=True)
+        for action_token_ids in self.list_actions_tokens_ids:
+            wanted_seq = torch.cat((input_ids, action_token_ids.view(1, 1)), dim=1)
+            score.append(self.model.compute_transition_scores(wanted_seq, outputs.scores, normalize_logits=False))
+
+        return score[torch.argmax(torch.tensor(score)).item()]
+
 
