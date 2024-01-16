@@ -37,7 +37,7 @@ class ModelFollowsInstructions:
         attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
         
         if self.use_logit_to_predict:
-            return self.action_logit(input_ids)
+            return self.action_logit(input_ids, attention_mask)
         else:
             return self.action_text(input_ids, attention_mask, prompt)
 
@@ -57,13 +57,15 @@ class ModelFollowsInstructions:
         else:
             return None
     
-    def action_logit(self, input_ids):
+    def action_logit(self, input_ids, attention_mask):
         score = []
-        outputs = self.model.generate(input_ids, return_dict_in_generate=True, output_scores=True)
+        outputs = self.model.generate(input_ids.to('cuda'), pad_token_id=50256, attention_mask=attention_mask, max_new_tokens=1, return_dict_in_generate=True, output_scores=True)
         for action_token_ids in self.list_actions_tokens_ids:
-            wanted_seq = torch.cat((input_ids, action_token_ids.view(1, 1)), dim=1)
+            wanted_seq = torch.cat((input_ids, action_token_ids.view(1, 1)), dim=1).to('cuda')
             score.append(self.model.compute_transition_scores(wanted_seq, outputs.scores, normalize_logits=False))
 
-        return score[torch.argmax(torch.tensor(score)).item()]
+        return self.list_actions_tokens[torch.argmax(torch.tensor(score)).item()]
+
+
 
 

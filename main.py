@@ -21,6 +21,6 @@ if __name__ == '__main__':
         use_logit_to_predict=True,
     )
 
-    trainer: Trainer = Trainer(model_generates_instructions, model_follows_instructions, environment, batch_size=50)
+    trainer: Trainer = Trainer(model_generates_instructions, model_follows_instructions, environment, batch_size=30)
     trainer.learn(1_000_000_000)
 
