@@ -11,7 +11,7 @@ class TextCartPole(Env):
         self.max_reward = 500
         # Provide a set of instructions to solve the following task:
         # self.description_environment = 'You are in control of a cart equipped with a pole on its top, and your objective is to prevent the pole from falling. You have the ability to move the cart from right to left, strategically maintaining balance. Your actions are limited to two choices: 0 for pushing the cart to the left and 1 for pushing it to the right. At each decision point, you are provided with crucial information, including the current Cart Position (min -4.8, max +4.8), Cart Velocity (min -inf, max +inf), Pole Angle (min -0.4, max +0.4), and Pole Angular Velocity (min -inf, max +inf). Now, let\'s outline the pseudocode instructions to successfully address this task:'
-        self.description_environment = 'Controlling a cart with a pole on top to prevent the pole from falling, based on the provided observation inputs (Cart Position, Cart Velocity, Pole Angle, Pole Angular Velocity) and output actions (0 for pushing the cart to the left and 1 for pushing it to the right):'
+        self.description_environment = 'Controlling a cart with a pole on top to prevent the pole from falling, based on the provided observation inputs (Cart Position, Cart Velocity, Pole Angle, Pole Angular Velocity) and output actions (0 for pushing the cart to the left and 1 for pushing it to the right).'
         self.description_observation = 'The observation is a 4-dimensional vector that breaks down as follows: (Cart Position, Cart Velocity, Pole Angle, Pole Angular Velocity). '
         self.actions_dictionary = {
             '0': 0,

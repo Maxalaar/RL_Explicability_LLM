@@ -96,7 +96,7 @@ class Trainer:
 
     def queries_tensor_generations(self):
         queries_tensor = []
-        query = self.model_generates_instructions.encode(self.environment.description_environment)
+        query = self.model_generates_instructions.encode(self.environment.description_environment + self.model_generates_instructions.instructions_prompt)
         for _ in range(self.batch_size):
             queries_tensor.append(query[0])
         return queries_tensor

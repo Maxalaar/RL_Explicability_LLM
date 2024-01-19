@@ -9,7 +9,7 @@ class ModelGeneratesInstructions:
         self,
         model_id: str,
         instruction_size_max: int = None,
-        instructions_prompt: str = 'Provide a set of instructions to solve the following task: ',
+        instructions_prompt: str = 'Provide instructions/code/pseudocode to solve the previous task: ',
         load_model_reference_in_4bit: bool = False,
         load_model_reference_in_8bit: bool = False,
         use_lora: bool = False,
