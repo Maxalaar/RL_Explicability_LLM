@@ -18,7 +18,7 @@ class ModelFollowsInstructions:
             bnb_4bit_compute_dtype=torch.float16
         )
 
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, device_map=self.device, quantization_config=bnb_config, load_in_4bit=load_in_4bit, load_in_8bit=load_in_8bit)
+        self.model = AutoModelForCausalLM.from_pretrained(model_id, device_map=self.device, quantization_config=bnb_config, load_in_4bit=load_in_4bit, load_in_8bit=load_in_8bit, trust_remote_code=True)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
 
         self.list_actions_tokens: List[str] = list_actions_tokens
@@ -32,7 +32,7 @@ class ModelFollowsInstructions:
         return self.tokenizer.decode(query_tensor, skip_special_tokens=True)
 
     def follow_instructions(self, instructions: str, observation: str) -> Union[str, None]:
-        prompt = 'Follow these instructions : ' + instructions + '\n' + observation + '\nThe action based on the previous instructions is :'
+        prompt = 'Follow these instructions : ' + instructions + '\n' + observation + '\nThe action based on the previous instructions is : '
         input_ids = self.encode(prompt)
         attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
         

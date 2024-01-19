@@ -5,7 +5,7 @@ from peft import LoraConfig
 
 
 class ModelGeneratesInstructions:
-    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False, number_layers_freeze: int = 0, use_lora: bool = False):
+    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False, use_lora: bool = False, load_model_in_4bit=False, load_model_in_8bit=False):
         self.model_id: str = model_id
         self.device: str = 'auto'
         self.instruction_size_max: int = instruction_size_max
@@ -21,17 +21,22 @@ class ModelGeneratesInstructions:
         else:
             self.lora_config = None
 
-        self.model = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device, peft_config=self.lora_config)
+        self.model = AutoModelForCausalLMWithValueHead.from_pretrained(
+            self.model_id,
+            device_map=self.device,
+            peft_config=self.lora_config,
+            load_in_4bit=load_model_in_4bit,
+            load_in_8bit=load_model_in_8bit,
+            trust_remote_code=True,
+        )
 
-        self.freeze(number_layers_freeze)
-        # bnb_config = BitsAndBytesConfig(
-        #     load_in_4bit=True,
-        #     bnb_4bit_use_double_quant=True,
-        #     bnb_4bit_quant_type='nf4',
-        #     bnb_4bit_compute_dtype=torch.bfloat16
-        # )
-
-        self.model_reference = AutoModelForCausalLMWithValueHead.from_pretrained(self.model_id, device_map=self.device, load_in_4bit=load_model_reference_in_4bit, load_in_8bit=load_model_reference_in_8bit)
+        self.model_reference = AutoModelForCausalLMWithValueHead.from_pretrained(
+            self.model_id,
+            device_map=self.device,
+            load_in_4bit=load_model_reference_in_4bit,
+            load_in_8bit=load_model_reference_in_8bit,
+            trust_remote_code=True
+        )
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.tokenizer.pad_token = self.tokenizer.eos_token

@@ -2,6 +2,7 @@ conda env remove --name RL_Explicability_LLM
 conda create -n RL_Explicability_LLM python=3.10
 
 pip install trl
+transformers[sentencepiece]
 pip install gymnasium
 pip install click
 pip install bitsandbytes
