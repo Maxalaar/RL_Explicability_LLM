@@ -6,7 +6,7 @@ class MinimalText(Env):
     def __init__(self):
         self.seed = 0
         random.seed(self.seed)
-        self.description_environment = 'If the observation is 0, the response should be 1; if the observation is 0, the response should be 0.'
+        self.description_environment = 'If the observation is 0, the response should be 1; if the observation is 1, the response should be 0.'
         self.actions_dictionary = {
             '0': 1,
             '1': 0,
@@ -18,14 +18,14 @@ class MinimalText(Env):
 
     def reset(self, **kwargs):
         self.current_step = 0
-        self.current_value = random.randint(0, len(self.actions_list))
+        self.current_value = random.randint(0, len(self.actions_list)-1)
         return self.observation_to_text_observation(self.current_value), {}
 
     def step(self, action: str):
         if self.actions_dictionary[action] == self.current_value:
-            if self.current_step < self.max_number_step:
+            if self.current_step < self.max_number_step-1:
                 self.current_step += 1
-                self.current_value = random.randint(0, len(self.actions_list))
+                self.current_value = random.randint(0, len(self.actions_list)-1)
                 return self.observation_to_text_observation(self.current_value), 1/self.max_number_step, False, False, {}
             else:
                 return None, 1/self.max_number_step, True, False, {}

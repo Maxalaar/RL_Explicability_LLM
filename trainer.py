@@ -81,6 +81,7 @@ class Trainer:
 
             for j in range(self.batch_size):
                 start_step_time = time.time()
+                # self.episode(self.environment.description_environment)
                 rewards.append(torch.tensor(self.episode(responses_text[j])))
                 end_step_time = time.time()
                 self.episode_time.append(end_step_time - start_step_time)

@@ -17,13 +17,13 @@ if __name__ == '__main__':
     )
 
     model_follows_instructions = ModelFollowsInstructions(
-        model_id='gpt2',   # 'mistralai/Mistral-7B-v0.1', 'gpt2'
+        model_id='mistralai/Mistral-7B-v0.1',   # 'mistralai/Mistral-7B-v0.1', 'gpt2'
         list_actions_tokens=environment.get_actions_tokens(),
         load_in_4bit=True,
         use_logit_to_predict=True,
         size_response_action=10,
     )
 
-    trainer: Trainer = Trainer(model_generates_instructions, model_follows_instructions, environment, batch_size=50)
+    trainer: Trainer = Trainer(model_generates_instructions, model_follows_instructions, environment, batch_size=10)
     trainer.learn(1_000_000_000)
 

@@ -48,6 +48,7 @@ class ModelFollowsInstructions:
 
     def follow_instructions(self, instructions: str, observation: str) -> Union[str, None]:
         prompt = 'Follow these instructions : ' + instructions + '\n' + observation + '\nThe action based on the previous instructions is : '
+        # print(prompt)
         input_ids = self.encode(prompt)
         attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
         
@@ -79,6 +80,7 @@ class ModelFollowsInstructions:
             wanted_seq = torch.cat((input_ids, action_token_ids), dim=1).to('cuda')
             score.append(self.model.compute_transition_scores(wanted_seq, outputs.scores, normalize_logits=False))
 
+        # print(self.list_actions_tokens[torch.argmax(torch.tensor(score)).item()])
         return self.list_actions_tokens[torch.argmax(torch.tensor(score)).item()]
 
 
