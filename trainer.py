@@ -126,7 +126,7 @@ class Trainer:
         print('')
         print('Learning information:')
         print('batch size: ' + str(self.batch_size))
-        print('instructions prompt: "' + self.model_generates_instructions.instructions_prompt + self.environment.description_environment + '"')
+        print('instructions prompt: "' + self.environment.description_environment + self.model_generates_instructions.instructions_prompt + '"')
         print('observation_text_example: "' + self.environment.reset()[0] + '"')
         print('for see the training use this command: ' + 'tensorboard --logdir=' + self.login_directory)
         print('')
