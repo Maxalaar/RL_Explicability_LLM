@@ -5,7 +5,15 @@ import torch
 
 
 class ModelFollowsInstructions:
-    def __init__(self, model_id: str, list_actions_tokens: List[str], size_response_action: int = None, load_in_8bit=False, load_in_4bit=False, use_logit_to_predict=False):
+    def __init__(
+        self,
+        model_id: str,
+        list_actions_tokens: List[str],
+        size_response_action: int = None,
+        load_in_8bit=False,
+        load_in_4bit=False,
+        use_logit_to_predict=False,
+    ):
         self.model_id = model_id
         self.use_logit_to_predict = use_logit_to_predict
         self.device: str = 'auto'
@@ -18,7 +26,14 @@ class ModelFollowsInstructions:
             bnb_4bit_compute_dtype=torch.float16
         )
 
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, device_map=self.device, quantization_config=bnb_config, load_in_4bit=load_in_4bit, load_in_8bit=load_in_8bit, trust_remote_code=True)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            device_map=self.device,
+            quantization_config=bnb_config,
+            load_in_4bit=load_in_4bit,
+            load_in_8bit=load_in_8bit,
+            trust_remote_code=True,
+        )
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
 
         self.list_actions_tokens: List[str] = list_actions_tokens

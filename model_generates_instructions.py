@@ -5,7 +5,17 @@ from peft import LoraConfig
 
 
 class ModelGeneratesInstructions:
-    def __init__(self, model_id: str, instruction_size_max: int = None, instructions_prompt: str = 'Provide a set of instructions to solve the following task: ', load_model_reference_in_4bit: bool = False, load_model_reference_in_8bit: bool = False, use_lora: bool = False, load_model_in_4bit=False, load_model_in_8bit=False):
+    def __init__(
+        self,
+        model_id: str,
+        instruction_size_max: int = None,
+        instructions_prompt: str = 'Provide a set of instructions to solve the following task: ',
+        load_model_reference_in_4bit: bool = False,
+        load_model_reference_in_8bit: bool = False,
+        use_lora: bool = False,
+        load_model_in_4bit=False,
+        load_model_in_8bit=False,
+    ):
         self.model_id: str = model_id
         self.device: str = 'auto'
         self.instruction_size_max: int = instruction_size_max
@@ -48,16 +58,6 @@ class ModelGeneratesInstructions:
 
     def decode(self, query_tensor) -> str:
         return self.tokenizer.decode(query_tensor, skip_special_tokens=True)
-
-    def instruction_generation(self, description_environment: str) -> str:
-        query_tensor = self.encode(self.instructions_prompt + description_environment)
-
-        optional_arguments = {}
-        if self.instruction_size_max is not None:
-            optional_arguments['txt_len'] = self.instruction_size_max
-
-        response_tensor = respond_to_batch(self.model, query_tensor.to(self.model.current_device), **optional_arguments)
-        return self.decode(response_tensor[0])
 
     def get_memory_footprint(self):
         # return self.model.get_memory_footprint()
